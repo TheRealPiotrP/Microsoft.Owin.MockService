@@ -7,19 +7,19 @@ namespace Microsoft.Owin.MockService
     public class ResponseBuilder
     {
         private readonly MockService _mockService;
-        private readonly Expression<Func<IOwinContext, bool>> _requestValidator;
+        private readonly Expression<Func<IOwinRequest, bool>> _requestValidator;
 
-        internal ResponseBuilder(MockService mockService, Expression<Func<IOwinContext, bool>> requestValidator)
+        internal ResponseBuilder(MockService mockService, Expression<Func<IOwinRequest, bool>> requestValidator)
         {
             _requestValidator = requestValidator;
             _mockService = mockService;
         }
 
-        public MockService RespondWith(Action<IOwinContext> responseConfiguration)
+        public MockService RespondWith(Action<IOwinResponse> responseConfiguration)
         {
             if (responseConfiguration == null) throw new ArgumentNullException("responseConfiguration");
 
-            Func<IOwinContext, Task> responseFunction = c =>
+            Func<IOwinResponse, Task> responseFunction = c =>
             {
                 responseConfiguration(c);
 
@@ -31,11 +31,11 @@ namespace Microsoft.Owin.MockService
             return _mockService;
         }
 
-        public MockService RespondWith(Action<IOwinContext, string> responseConfiguration)
+        public MockService RespondWith(Action<IOwinResponse, string> responseConfiguration)
         {
             if (responseConfiguration == null) throw new ArgumentNullException("responseConfiguration");
 
-            Func<IOwinContext, Task> responseFunction = c =>
+            Func<IOwinResponse, Task> responseFunction = c =>
             {
                 responseConfiguration(c, _mockService.GetBaseAddress());
 

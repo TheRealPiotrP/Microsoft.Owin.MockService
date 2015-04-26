@@ -99,7 +99,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Middleware\LoggingMiddleware.cs" />
     <Compile Include="MockService.cs" />
-    <Compile Include="ResponseBuilder.cs" />
+    <Compile Include="Fluent\ResponseBuilder.cs" />
     <Compile Include="SelfHost\MockStartup.cs" />
     <Compile Include="Agents\PortAgent.cs" />
     <Compile Include="Repositories\MockServiceRepository.cs" />

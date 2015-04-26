@@ -9,9 +9,9 @@ namespace Microsoft.Owin.MockService.Extensions.ODataV4
 
             return responseBuilder.RespondWith((c, b) =>
             {
-                c.Response.StatusCode = 201;
-                c.Response.WithDefaultODataHeaders();
-                c.Response.WithODataEntityResponseBody(b, entitySetName, response);
+                c.StatusCode = 201;
+                c.WithDefaultODataHeaders();
+                c.WithODataEntityResponseBody(b, entitySetName, response);
             });
         }
 
@@ -20,9 +20,9 @@ namespace Microsoft.Owin.MockService.Extensions.ODataV4
 
             return responseBuilder.RespondWith((c, b) =>
             {
-                c.Response.StatusCode = 200;
-                c.Response.WithDefaultODataHeaders();
-                c.Response.WithODataEntityResponseBody(b, entitySetName, response);
+                c.StatusCode = 200;
+                c.WithDefaultODataHeaders();
+                c.WithODataEntityResponseBody(b, entitySetName, response);
             });
         }
 
@@ -31,8 +31,8 @@ namespace Microsoft.Owin.MockService.Extensions.ODataV4
             return responseBuilder
                 .RespondWith((c, b) =>
                 {
-                    c.Response.StatusCode = 200;
-                    c.Response.WithDefaultODataHeaders();
+                    c.StatusCode = 200;
+                    c.WithDefaultODataHeaders();
                 });
         }
 
@@ -41,10 +41,10 @@ namespace Microsoft.Owin.MockService.Extensions.ODataV4
             return responseBuilder
                 .RespondWith((c, b) =>
                 {
-                    c.Response.StatusCode = 200;
-                    c.Response.WithDefaultODataHeaders();
-                    c.Response.ContentType = "text/plain";
-                    c.Response.Write(text);
+                    c.StatusCode = 200;
+                    c.WithDefaultODataHeaders();
+                    c.ContentType = "text/plain";
+                    c.Write(text);
                 });
         }
     }

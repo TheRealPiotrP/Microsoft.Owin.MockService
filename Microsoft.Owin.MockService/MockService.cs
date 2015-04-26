@@ -16,16 +16,16 @@ namespace Microsoft.Owin.MockService
     {
         private readonly int _portNumber;
         private readonly IDisposable _host;
-        private readonly List<Tuple<Expression<Func<IOwinContext, bool>>, Func<IOwinContext, Task>>> _handlers;
-        private readonly IList<Expression<Func<IOwinContext, bool>>> _unusedHandlers;
+        private readonly List<Tuple<Expression<Func<IOwinRequest, bool>>, Func<IOwinResponse, Task>>> _handlers;
+        private readonly IList<Expression<Func<IOwinRequest, bool>>> _unusedHandlers;
         private readonly bool _ignoreUnusedHandlers;
         private readonly bool _printDebugMessages = Debugger.IsAttached;
 
         public MockService(bool ignoreUnusedHandlers = false)
         {
             _portNumber = PortAgent.GetFreePortNumber();
-            _handlers = new List<Tuple<Expression<Func<IOwinContext, bool>>, Func<IOwinContext, Task>>>();
-            _unusedHandlers = new List<Expression<Func<IOwinContext, bool>>>();
+            _handlers = new List<Tuple<Expression<Func<IOwinRequest, bool>>, Func<IOwinResponse, Task>>>();
+            _unusedHandlers = new List<Expression<Func<IOwinRequest, bool>>>();
             _ignoreUnusedHandlers = ignoreUnusedHandlers;
 
             MockServiceRepository.Register(_portNumber, this);
@@ -33,9 +33,9 @@ namespace Microsoft.Owin.MockService
             _host = WebApp.Start<MockStartup>(GetBaseAddress());
         }
 
-        internal MockService Setup(Expression<Func<IOwinContext, bool>> condition, Func<IOwinContext, Task> response)
+        internal MockService Setup(Expression<Func<IOwinRequest, bool>> condition, Func<IOwinResponse, Task> response)
         {
-            _handlers.Add(new Tuple<Expression<Func<IOwinContext, bool>>, Func<IOwinContext, Task>>(condition, response));
+            _handlers.Add(new Tuple<Expression<Func<IOwinRequest, bool>>, Func<IOwinResponse, Task>>(condition, response));
             _unusedHandlers.Add(condition);
 
             if (_printDebugMessages) Debug.WriteLine(new ConstantMemberEvaluationVisitor().Visit(condition));
@@ -43,7 +43,7 @@ namespace Microsoft.Owin.MockService
             return this;
         }
 
-        public ResponseBuilder OnRequest(Expression<Func<IOwinContext, bool>> condition)
+        public ResponseBuilder OnRequest(Expression<Func<IOwinRequest, bool>> condition)
         {
             return new ResponseBuilder(this, condition);
         }
@@ -54,13 +54,13 @@ namespace Microsoft.Owin.MockService
             {
                 foreach (var handler in _handlers)
                 {
-                    if (!handler.Item1.Compile().Invoke(context)) continue;
+                    if (!handler.Item1.Compile().Invoke(context.Request)) continue;
 
                     _unusedHandlers.Remove(handler.Item1);
-                    return handler.Item2(context);
+                    return handler.Item2(context.Response);
                 }
 
-                context.Response.StatusCode = 400;
+                context.Response.StatusCode = 404;
                 Debug.WriteLine("No handler for request\n\r{0} {1}", context.Request.Method, context.Request.Path);
                 return Task.FromResult<object>(null);
             }
@@ -80,6 +80,8 @@ namespace Microsoft.Owin.MockService
         public void Dispose()
         {
             _host.Dispose();
+
+            MockServiceRepository.Unregister(_portNumber);
 
             if (!_ignoreUnusedHandlers && _unusedHandlers.Any())
                 throw new InvalidOperationException(

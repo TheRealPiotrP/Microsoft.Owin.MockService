@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.Owin.MockService.Agents;
 using Xunit;
 
-namespace Microsoft.Owin.MockService.Tests
+namespace Microsoft.Owin.MockService.Tests.UnitTests
 {
     public class PortAgentSpecs
     {

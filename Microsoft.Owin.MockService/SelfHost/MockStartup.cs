@@ -11,6 +11,7 @@ namespace Microsoft.Owin.MockService.SelfHost
     class MockStartup
     {
         private MockService _service;
+
         public void Configuration(IAppBuilder appBuilder)
         {
             var portNumber =
