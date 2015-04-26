@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Its.Log.Instrumentation;
 
 namespace Microsoft.Owin.MockService.Middleware
 {
@@ -41,7 +42,7 @@ namespace Microsoft.Owin.MockService.Middleware
 
         private static void WriteResponseSummary(IOwinContext context, string responseBody)
         {
-            Debug.WriteLine(@"
+            Log.Write(String.Format(@"
 <<<RESPONSE<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 HTTP/{1} {0}
 {2}
@@ -52,7 +53,7 @@ HTTP/{1} {0}
                     context.Response.Headers.Select(
                         h =>
                             String.Format("{0}: {1}\r\n", h.Key,
-                                String.Join(", ", h.Value.Select(v => v.ToString()))))), responseBody);
+                                String.Join(", ", h.Value.Select(v => v.ToString()))))), responseBody));
         }
 
         private static async Task WriteRequestSummary(IOwinContext context)
@@ -69,7 +70,7 @@ HTTP/{1} {0}
                 bodyBuffer.Seek(0, SeekOrigin.Begin);
             }
 
-            Debug.WriteLine(@"
+            Log.Write(String.Format(@"
 >>>REQUEST>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 {0} {1}
 {2}
@@ -81,7 +82,7 @@ HTTP/{1} {0}
                         h =>
                             String.Format("{0}: {1}\r\n", h.Key,
                             String.Join(", ", h.Value.Select(v => v.ToString(CultureInfo.InvariantCulture)))))),
-                            requestBody);
+                            requestBody));
         }
     }
 }

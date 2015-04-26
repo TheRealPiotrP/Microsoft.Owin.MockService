@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Its.Log.Instrumentation;
 using Microsoft.Owin.Hosting;
 using Microsoft.Owin.MockService.Agents;
 using Microsoft.Owin.MockService.Repositories;
@@ -19,7 +20,6 @@ namespace Microsoft.Owin.MockService
         private readonly List<Tuple<Expression<Func<IOwinRequest, bool>>, Func<IOwinResponse, Task>>> _handlers;
         private readonly IList<Expression<Func<IOwinRequest, bool>>> _unusedHandlers;
         private readonly bool _ignoreUnusedHandlers;
-        private readonly bool _printDebugMessages = Debugger.IsAttached;
 
         public MockService(bool ignoreUnusedHandlers = false)
         {
@@ -38,7 +38,7 @@ namespace Microsoft.Owin.MockService
             _handlers.Add(new Tuple<Expression<Func<IOwinRequest, bool>>, Func<IOwinResponse, Task>>(condition, response));
             _unusedHandlers.Add(condition);
 
-            if (_printDebugMessages) Debug.WriteLine(new ConstantMemberEvaluationVisitor().Visit(condition));
+            Log.Write(new ConstantMemberEvaluationVisitor().Visit(condition));
 
             return this;
         }

@@ -20,7 +20,7 @@ namespace Microsoft.Owin.MockService.SelfHost
 
             _service = MockServiceRepository.GetServiceMockForPort(portNumber);
 
-            if (Debugger.IsAttached) appBuilder.Use(typeof (LoggingMiddleware));
+            appBuilder.Use(typeof (LoggingMiddleware));
 
             appBuilder.Use(typeof (BufferedBodyMiddleware));
 
