@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Owin.MockService.Repositories
 {
-    public static class MockServiceRepository
+    internal static class MockServiceRepository
     {
         private static readonly IDictionary<int, MockService> MockServices =
             new Dictionary<int, MockService>();
@@ -16,14 +16,14 @@ namespace Microsoft.Owin.MockService.Repositories
             return MockServices.ContainsKey(portNumber) ? MockServices[portNumber] : null;
         }
 
-        internal static void Register(int portNumber, Owin.MockService.MockService startedScenario)
+        internal static void Register(int portNumber, MockService mockService)
         {
             lock (MockServices)
             {
                 if (MockServices.ContainsKey(portNumber))
                     throw new InvalidOperationException("port in use");
 
-                MockServices[portNumber] = startedScenario;
+                MockServices[portNumber] = mockService;
             }
         }
 
