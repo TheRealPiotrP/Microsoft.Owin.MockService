@@ -98,7 +98,7 @@ namespace Microsoft.Owin.MockService.Tests.UnitTests
         {
             var client = new HttpClient();
 
-            var exceptionMessage = Any.String();
+            var exceptionMessage = Any.String(1);
 
             HttpResponseMessage response;
 
