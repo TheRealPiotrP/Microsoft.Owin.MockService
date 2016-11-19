@@ -6,9 +6,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Its.Log.Instrumentation;
 using Microsoft.Owin.Hosting;
-using Microsoft.Owin.MockService.Agents;
-using Microsoft.Owin.MockService.Repositories;
-using Microsoft.Owin.MockService.SelfHost;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Owin.MockService
@@ -23,7 +20,6 @@ namespace Microsoft.Owin.MockService
 
         public MockService(bool ignoreUnusedHandlers = false)
         {
-            _portNumber = PortAgent.GetFreePortNumber();
             _handlers = new List<Tuple<Expression<Func<IOwinRequest, bool>>, Func<IOwinResponse, Task>>>();
             _unusedHandlers = new List<Expression<Func<IOwinRequest, bool>>>();
             _ignoreUnusedHandlers = ignoreUnusedHandlers;

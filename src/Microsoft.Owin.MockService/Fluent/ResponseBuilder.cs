@@ -1,25 +1,26 @@
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Owin.MockService
 {
     public class ResponseBuilder
     {
         private readonly MockService _mockService;
-        private readonly Expression<Func<IOwinRequest, bool>> _requestValidator;
+        private readonly Expression<Func<HttpRequest, bool>> _requestValidator;
 
-        internal ResponseBuilder(MockService mockService, Expression<Func<IOwinRequest, bool>> requestValidator)
+        internal ResponseBuilder(MockService mockService, Expression<Func<HttpRequest, bool>> requestValidator)
         {
             _requestValidator = requestValidator;
             _mockService = mockService;
         }
 
-        public MockService RespondWith(Action<IOwinResponse> responseConfiguration)
+        public MockService RespondWith(Action<HttpResponse> responseConfiguration)
         {
             if (responseConfiguration == null) throw new ArgumentNullException("responseConfiguration");
 
-            Func<IOwinResponse, Task> responseFunction = c =>
+            Func<HttpResponse, Task> responseFunction = c =>
             {
                 responseConfiguration(c);
 
@@ -31,11 +32,11 @@ namespace Microsoft.Owin.MockService
             return _mockService;
         }
 
-        public MockService RespondWith(Action<IOwinResponse, string> responseConfiguration)
+        public MockService RespondWith(Action<HttpResponse, string> responseConfiguration)
         {
             if (responseConfiguration == null) throw new ArgumentNullException("responseConfiguration");
 
-            Func<IOwinResponse, Task> responseFunction = c =>
+            Func<HttpResponse, Task> responseFunction = c =>
             {
                 responseConfiguration(c, _mockService.GetBaseAddress());
 
