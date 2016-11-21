@@ -1,19 +1,39 @@
 version: '1.0.{build}'
+
 configuration:
 - Debug
 - Release
+
 platform: Any CPU
+
 init:
 - ps: $Env:LABEL = "-CI-" + $Env:APPVEYOR_BUILD_NUMBER.PadLeft(5, "0")
+- ps: $Env:CLI_VERSION = "1.0.0-preview3-004056"
+
+install:
+# Download install script to install .NET cli in .dotnet dir
+- ps: mkdir -Force ".\scripts\obtain\" | Out-Null
+- ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/install.ps1" -OutFile ".\scripts\obtain\install.ps1"
+- ps: $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetcli"
+- ps: '& .\scripts\obtain\install.ps1 -version "$env:CLI_VERSION" -InstallDir "$env:DOTNET_INSTALL_DIR" -NoPath'
+# add dotnet to PATH
+- ps: $env:Path = "$env:DOTNET_INSTALL_DIR;$env:Path"
+
 before_build:
-- appveyor-retry dotnet restore -v Minimal
+- appveyor-retry dotnet restore src\Microsoft.Kestrel.MockService\Microsoft.Kestrel.MockService.csproj
+- appveyor-retry dotnet restore test\Microsoft.Kestrel.MockService.Tests\Microsoft.Kestrel.MockService.Tests.csproj
+
 build_script:
 - dotnet build "src\Microsoft.Kestrel.MockService\Microsoft.Kestrel.MockService.csproj" -c %CONFIGURATION% --version-suffix %LABEL%
+
 after_build:
 - dotnet pack "src\Microsoft.Kestrel.MockService\Microsoft.Kestrel.MockService.csproj" -c %CONFIGURATION% --no-build --version-suffix %LABEL% -o artifacts
+
 test_script:
 - dotnet test "test\Microsoft.Kestrel.MockService.Tests\Microsoft.Kestrel.MockService.Tests.csproj" -c %CONFIGURATION%
+
 artifacts:
 - path: artifacts\**\*.*
+
 cache:
 - '%USERPROFILE%\.nuget\packages'
