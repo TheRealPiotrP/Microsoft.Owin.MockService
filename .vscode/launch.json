@@ -6,10 +6,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/src/test/bin/Debug/netcoreapp1.0/test.dll",
+            "program": "${workspaceRoot}/bin/Debug/<target-framework>/<project-name.dll>",
             "args": [],
             "cwd": "${workspaceRoot}",
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "externalConsole": false
         },
         {
